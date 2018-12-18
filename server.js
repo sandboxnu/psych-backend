@@ -1,4 +1,4 @@
-import express from 'express';
+const express = require('express');
 
 const app = express();
 
@@ -6,8 +6,8 @@ const PORT = 3001;
 
 app.get('/api/experiment', (req, res) => {
   const obj = {
-    videoId: 302719494,
-    question: "some question",
+    videoId: '302719494',
+    question: 'some question',
   };
   res.json(obj);
 });
