@@ -9,7 +9,7 @@ function uploadFile(endpoint, data, filename) {
 
   // Using axios http lib to send post request with formdata.
   // fetch, xmlhttprequest, jquery etc. could also be used.
-  axios.post(`http://localhost:3001/api/${endpoint}`, formData)
+  axios.post(`http://localhost:3001/${endpoint}`, formData)
     .then(response => console.log(response))
     .catch(error => console.log(error));
 }
@@ -18,7 +18,7 @@ function getCurrentConfig() {
   // using the native fetch api this time.
   //  do note that fetch might need to be polyfilled
   //  axios is probably better
-  fetch('http://localhost:3001/api/experiment')
+  fetch('http://localhost:3001/experiment')
     .then(response => response.text())
     .then((text) => {
       document.getElementById('current-config').innerHTML = text;
