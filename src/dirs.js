@@ -6,7 +6,6 @@ const DATADIR = `${FILEDIR}/data`;
 
 // Throw error if FILEDIR is not defined.
 if (typeof FILEDIR === 'undefined') {
-  console.log('file not defs');
   throw new Error('FILEDIR environment variable not defined. Add it to .env');
 }
 
