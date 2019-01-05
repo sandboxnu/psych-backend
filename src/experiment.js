@@ -14,7 +14,7 @@ module.exports = (router = new Router()) => {
   });
   // Post config file
   router.post('/', (req, res) => {
-    const { files: { file } } = req;
+    const { files: { file } = {} } = req;
     if (!file) {
       return res.status(400).send('Config file was not uploaded!');
     }

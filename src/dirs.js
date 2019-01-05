@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fse = require('fs-extra');
 require('dotenv').config();
 
 const { FILEDIR } = process.env;
@@ -9,14 +9,6 @@ if (typeof FILEDIR === 'undefined') {
   throw new Error('FILEDIR environment variable not defined. Add it to .env');
 }
 
-// Create FILEDIR if it does not exist
-if (!fs.existsSync(FILEDIR)) {
-  fs.mkdirSync(FILEDIR);
-}
-
-// Create data subdirectory if it does not already exist
-if (!fs.existsSync(DATADIR)) {
-  fs.mkdirSync(DATADIR);
-}
+fse.ensureDir(DATADIR);
 
 module.exports = { FILEDIR, DATADIR };

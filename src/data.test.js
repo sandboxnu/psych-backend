@@ -1,7 +1,21 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const request = require('supertest');
+const fse = require('fs-extra');
+require('dotenv').config();
+
+process.env.FILEDIR = `${process.env.FILEDIR}/test`;
+const TESTDIR = process.env.FILEDIR;
 const data = require('./data');
+
+afterEach(() => {
+  fse.emptyDirSync(TESTDIR);
+  fse.ensureDirSync(`${TESTDIR}/data`);
+});
+
+afterAll(() => {
+  fse.remove(TESTDIR);
+});
 
 const app = express();
 app.use(fileUpload());
@@ -27,6 +41,13 @@ test('POST data with no file should fail', async () => {
     .expect(400);
 });
 
+test('POST data with wrong field name should fail', async () => {
+  await request(app)
+    .post('/')
+    .attach('WRONG', Buffer.from('heyheyhey'))
+    .expect(400);
+});
+
 test('POST data with no file name should fail', async () => {
   await request(app)
     .post('/')
@@ -34,6 +55,5 @@ test('POST data with no file name should fail', async () => {
     .expect(400);
 });
 
-// No good way to test the zip data. The lib used to zip files reads actual files.
-//  Extracting zip files programmatically is also a hassle.
-// Probaby just need to mock the archiver and file middleware but its not worth it.
+// TODO: test the contents of the zip.
+// TODO: mock the file system instead of using a tmp folder.
