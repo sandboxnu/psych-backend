@@ -1,16 +1,17 @@
 const express = require('express');
-
-const app = express();
+const cors = require('cors');
+const fileUpload = require('express-fileupload');
+const experiment = require('./src/experiment');
+const data = require('./src/data');
 
 const PORT = 3001;
 
-app.get('/api/experiment', (req, res) => {
-  const obj = {
-    videoId: '302719494',
-    question: 'some question',
-  };
-  res.json(obj);
-});
+const app = express();
+
+app.use(fileUpload());
+app.use(cors()); // Allow cross-origin requests since frontend is on different domain than backend.
+app.use('/experiment', experiment());
+app.use('/data', data());
 
 /* eslint no-console: "off" */
 app.listen(PORT, () => {

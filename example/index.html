@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="ajax.js"></script>
+  </head>
+  <body>
+    <h2>Upload config file with form</h2>
+    <form ref='configForm' 
+      id='configForm' 
+      action='http://localhost:3001/experiment' 
+      method='post' 
+      encType="multipart/form-data">
+        <input type="file" name="file" />
+        <input type='submit' value='Upload!' />
+    </form>     
+    <h2>Upload collected data file with form</h2>
+    <form ref='dataForm' 
+      id='dataForm' 
+      action='http://localhost:3001/data' 
+      method='post' 
+      encType="multipart/form-data">
+        <input type="file" name="file" />
+        <input type='submit' value='Upload!' />
+    </form>     
+    <h2>Upload sample config with javascript</h2>
+    <button onclick="uploadJSONConfig()">Upload!</button>
+    <h2>Upload sample collected data with javascript</h2>
+    <button onclick="uploadCSVData()">Upload!</button>
+    <h2>Current config:</h2>
+    <button onclick="getCurrentConfig()">Refresh current config</button>
+    <p id="current-config"> </p>
+    <h2>Download collected data</h2>
+    <a href="http://localhost:3001/data" target="_blank">Download data zip</a>
+  </body>
+</html>
