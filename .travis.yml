@@ -5,8 +5,6 @@ env:
 - FILEDIR=${TRAVIS_BUILD_DIR}/tmp
 addons:
   ssh_known_hosts: 142.93.49.129
-before_install:
-  - bash _travis/install.sh
 after_success:
   - bash _travis/deploy.sh
 before_install:
