@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x # Show the output of the following commands (useful for debugging)
 
-if [ $TRAVIS_BRANCH == 'master' -a ! $TRAVIS_PULL_REQUEST ] ; then
+if [[ ($TRAVIS_BRANCH == 'master') && ($TRAVIS_PULL_REQUEST == 'false') ]]; then
   chmod 600 sandbox-deploy-key
   mv sandbox-deploy-key ~/.ssh/id_rsa
   git remote add deploy "deploy@142.93.49.129:/var/www/psych-backend/src"
