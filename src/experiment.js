@@ -1,10 +1,11 @@
 const { Router } = require('express');
+const path = require('path');
 const { FILEDIR } = require('./dirs');
 
 module.exports = (router = new Router()) => {
 // Get config file
   router.get('/', (req, res) => {
-    res.sendFile(`${FILEDIR}/config.txt`, {}, (err) => {
+    res.sendFile(path.join(FILEDIR, 'config.txt'), {}, (err) => {
       if (err) {
         res.status(400).send({
           message: 'no config',
@@ -19,7 +20,7 @@ module.exports = (router = new Router()) => {
       return res.status(400).send('Config file was not uploaded!');
     }
     // Save the config file
-    file.mv(`${FILEDIR}/config.txt`, (err) => {
+    file.mv(path.join(FILEDIR, 'config.txt'), (err) => {
       if (err) {
         return res.status(500).send(err);
       }
