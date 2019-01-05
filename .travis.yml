@@ -1,5 +1,8 @@
 language: node_js
 node_js:
-  - "10"
+- '10'
 env:
-  - FILEDIR=${TRAVIS_BUILD_DIR}/tmp
+- FILEDIR=${TRAVIS_BUILD_DIR}/tmp
+before_install:
+- openssl aes-256-cbc -K $encrypted_9543970147d9_key -iv $encrypted_9543970147d9_iv
+  -in sandbox-deploy-key.enc -out sandbox-deploy-key -d
