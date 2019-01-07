@@ -9,7 +9,7 @@
     <h2>Upload config file with form</h2>
     <form ref='configForm' 
       id='configForm' 
-      action='http://localhost:3001/experiment' 
+      action='http://142.93.49.129:3000/experiment' 
       method='post' 
       encType="multipart/form-data">
         <input type="file" name="file" />
@@ -18,7 +18,7 @@
     <h2>Upload collected data file with form</h2>
     <form ref='dataForm' 
       id='dataForm' 
-      action='http://localhost:3001/data' 
+      action='http://142.93.49.129:3000/data' 
       method='post' 
       encType="multipart/form-data">
         <input type="file" name="file" />
@@ -32,6 +32,6 @@
     <button onclick="getCurrentConfig()">Refresh current config</button>
     <p id="current-config"> </p>
     <h2>Download collected data</h2>
-    <a href="http://localhost:3001/data" target="_blank">Download data zip</a>
+    <a href="http://142.93.49.129:3000/data" target="_blank">Download data zip</a>
   </body>
 </html>

@@ -1,3 +1,4 @@
+const SERVER_URL = '142.93.49.129:3000';
 // send file with string data and given filename to an API endpoint.
 // 'experiment' endpoint for config, 'data' endpoint for collected data.
 function uploadFile(endpoint, data, filename) {
@@ -9,7 +10,7 @@ function uploadFile(endpoint, data, filename) {
 
   // Using axios http lib to send post request with formdata.
   // fetch, xmlhttprequest, jquery etc. could also be used.
-  axios.post(`http://localhost:3001/${endpoint}`, formData)
+  axios.post(`http://${SERVER_URL}/${endpoint}`, formData)
     .then(response => console.log(response))
     .catch(error => console.log(error));
 }
@@ -18,7 +19,7 @@ function getCurrentConfig() {
   // using the native fetch api this time.
   //  do note that fetch might need to be polyfilled
   //  axios is probably better
-  fetch('http://localhost:3001/experiment')
+  fetch(`http://${SERVER_URL}/experiment`)
     .then(response => response.text())
     .then((text) => {
       document.getElementById('current-config').innerHTML = text;
