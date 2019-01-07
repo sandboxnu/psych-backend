@@ -24,17 +24,24 @@ Testing: `npm test`
 
 Pushing to master deploys to Digital Ocean server running the projects on different ports:
 
-**Image project:** `142.93.49.129:3000`
+**Development environment:** `142.93.49.129:3000`
 
-**Game project:** `142.93.49.129:3001`
+**Image project:** `142.93.49.129:3001`
 
-**Video project:** `142.93.49.129:3002`
+**Game project:** `142.93.49.129:3002`
+
+**Video project:** `142.93.49.129:3003`
+
+Use the development environment first because the other three are for PRODUCTION.
 
 ## Usage
 
 `GET /experiment` to download config file
+
 `POST /experiment` with multipart/form-data and the config in the file field to upload config
+
 `GET /data` to download zip of data files
+
 `POST /data` with multipart/form-data and the config in the file field to upload data
 
 See [example](example/index.html) for much clearer info. Better docs needed!
