@@ -24,13 +24,13 @@ Testing: `npm test`
 
 Pushing to master deploys to Digital Ocean server running the projects on different ports:
 
-**Development environment:** `142.93.49.129:3000`
+**Development environment:** `http://142.93.49.129:3000`
 
-**Image project:** `142.93.49.129:3001`
+**Image project:** `http://142.93.49.129:3001`
 
-**Game project:** `142.93.49.129:3002`
+**Game project:** `http://142.93.49.129:3002`
 
-**Video project:** `142.93.49.129:3003`
+**Video project:** `http://142.93.49.129:3003`
 
 Use the development environment first because the other three are for PRODUCTION.
 
