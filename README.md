@@ -24,13 +24,13 @@ Testing: `npm test`
 
 Pushing to master deploys to Digital Ocean server running the projects on different ports:
 
-**Development environment:** `http://142.93.49.129:3000`
+**Development environment:** `https://api.sandboxneu.com/test`
 
-**Image project:** `http://142.93.49.129:3001`
+**Predictive Affect project:** `https://api.sandboxneu.com/predictive-affect`
 
-**Game project:** `http://142.93.49.129:3002`
+**Allostasis Game project:** `https://api.sandboxneu.com/allostasis-game`
 
-**Video project:** `http://142.93.49.129:3003`
+**Empathic Accuracy Project:** `https://api.sandboxneu.com/empathic-accuracy`
 
 Use the development environment first because the other three are for PRODUCTION.
 
