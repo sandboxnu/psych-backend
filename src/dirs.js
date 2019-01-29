@@ -1,8 +1,10 @@
 const fse = require('fs-extra');
+const path = require('path');
 require('dotenv').config();
 
 const { FILEDIR } = process.env;
-const DATADIR = `${FILEDIR}/data`;
+const DATADIR = path.join(FILEDIR, 'data');
+const SCHEMADIR = path.join(FILEDIR, 'schema');
 
 // Throw error if FILEDIR is not defined.
 if (typeof FILEDIR === 'undefined') {
@@ -10,5 +12,6 @@ if (typeof FILEDIR === 'undefined') {
 }
 
 fse.ensureDir(DATADIR);
+fse.ensureDir(SCHEMADIR);
 
-module.exports = { FILEDIR, DATADIR };
+module.exports = { FILEDIR, DATADIR, SCHEMADIR };
