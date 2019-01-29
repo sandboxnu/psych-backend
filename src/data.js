@@ -3,6 +3,7 @@ const path = require('path');
 const archiver = require('archiver');
 const sanitize = require('sanitize-filename');
 const unusedFilename = require('unused-filename');
+const validate = require('./schema-validator');
 const { DATADIR } = require('./dirs');
 
 
@@ -29,6 +30,7 @@ module.exports = (router = new Router()) => {
     }
     // Sanitize filename to ensure it's a valid path (and avoid certain hacks).
     const safeName = sanitize(file.name);
+    const validationResult = validate(file);
     unusedFilename(path.join(DATADIR, safeName))
       .then((filename) => {
         // Store the file on the server.
