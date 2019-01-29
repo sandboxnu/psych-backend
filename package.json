@@ -21,6 +21,7 @@
     "unused-filename": "^1.0.0"
   },
   "devDependencies": {
+    "ajv": "^6.7.0",
     "eslint": "^5.10.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
