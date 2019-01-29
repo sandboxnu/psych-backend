@@ -1,11 +1,22 @@
 const Ajv = require('ajv');
+const fs = require('fs');
+const path = require('path');
 const { SCHEMADIR } = require('./dirs');
 
 const ajv = new Ajv();
 
-// Returns the name of the first matching schema for the data
+// Returns the name of the first matching schema for the data,
+// null if no matches
 const findMatchingSchema = (data) => {
-  return 'TODO';
+  const schemaFiles = fs.readdirSync(SCHEMADIR);
+  for (const schemaFile of schemaFiles) {
+    const fullpath = path.join(SCHEMADIR, schemaFile);
+    const schema = JSON.parse(fs.readFileSync(fullpath));
+    if (ajv.validate(schema, data)) {
+      return schemaFile;
+    }
+  }
+  return null;
 };
 
 // Returns one of:
