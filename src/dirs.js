@@ -10,9 +10,16 @@ if (typeof FILEDIR === 'undefined') {
 }
 
 const DATADIR = path.join(FILEDIR, 'data');
+const MISCDATADIR = path.join(FILEDIR, 'unvalidated_data');
 const SCHEMADIR = path.join(FILEDIR, 'schema');
 
 fse.ensureDir(DATADIR);
+fse.ensureDir(MISCDATADIR);
 fse.ensureDir(SCHEMADIR);
 
-module.exports = { FILEDIR, DATADIR, SCHEMADIR };
+module.exports = {
+  FILEDIR,
+  DATADIR,
+  MISCDATADIR,
+  SCHEMADIR,
+};

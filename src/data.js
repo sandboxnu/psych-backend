@@ -4,8 +4,7 @@ const archiver = require('archiver');
 const sanitize = require('sanitize-filename');
 const unusedFilename = require('unused-filename');
 const validate = require('./schema-validator');
-const { DATADIR } = require('./dirs');
-
+const { DATADIR, MISCDATADIR } = require('./dirs');
 
 module.exports = (router = new Router()) => {
   router.get('/', (req, res) => {
@@ -31,14 +30,29 @@ module.exports = (router = new Router()) => {
     // Sanitize filename to ensure it's a valid path (and avoid certain hacks).
     const safeName = sanitize(file.name);
     const validationResult = validate(file);
-    unusedFilename(path.join(DATADIR, safeName))
-      .then((filename) => {
-        // Store the file on the server.
-        file.mv(filename, (err) => {
+
+    let filePath;
+    let sendStatus;
+    if (validationResult.error) {
+      filePath = path.join(MISCDATADIR, safeName);
+      sendStatus = () => res.status(400).send(validationResult.error);
+    } else {
+      let schemaName = validationResult.matches;
+      if (schemaName.endsWith('.json')) {
+        schemaName = schemaName.slice(0, -5);
+      }
+
+      const fileName = `${schemaName}_${safeName}`;
+      filePath = path.join(DATADIR, fileName);
+      sendStatus = () => res.send('Data saved');
+    }
+    unusedFilename(filePath)
+      .then((unusedPath) => {
+        file.mv(unusedPath, (err) => {
           if (err) {
             return res.status(500).send(err);
           }
-          return res.send('Data saved');
+          return sendStatus();
         });
       });
     return false;

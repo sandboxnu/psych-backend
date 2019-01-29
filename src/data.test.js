@@ -11,6 +11,8 @@ const data = require('./data');
 afterEach(() => {
   fse.emptyDirSync(TESTDIR);
   fse.ensureDirSync(`${TESTDIR}/data`);
+  fse.ensureDirSync(`${TESTDIR}/schema`);
+  fse.ensureDirSync(`${TESTDIR}/unvalidated_data`);
 });
 
 afterAll(() => {
@@ -28,11 +30,11 @@ test('GET data should succeed with zip Content-Type', async () => {
     .expect(200);
 });
 
-test('POST data file should succeed', async () => {
+test('POST non-JSON data file should fail', async () => {
   await request(app)
     .post('/')
     .attach('file', Buffer.from('heyheyhey'), 'data.txt')
-    .expect(200);
+    .expect(400);
 });
 
 test('POST data with no file should fail', async () => {
@@ -55,5 +57,13 @@ test('POST data with no file name should fail', async () => {
     .expect(400);
 });
 
+test('POST JSON data file with no matching schema should fail', async () => {
+  await request(app)
+    .post('/')
+    .attach('file', Buffer.from('{ "content": "heyheyhey" }'), 'data.json')
+    .expect(400);
+});
+
 // TODO: test the contents of the zip.
 // TODO: mock the file system instead of using a tmp folder.
+// TODO: test uploading with schema (should mock file system first)
