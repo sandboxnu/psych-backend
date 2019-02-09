@@ -34,7 +34,11 @@ module.exports = (router = new Router()) => {
     let filePath;
     let sendStatus;
     if (validationResult.error) {
-      filePath = path.join(MISCDATADIR, safeName);
+      if (validationResult !== 'Could not parse data as JSON') {
+        filePath = path.join(MISCDATADIR, safeName);
+      } else {
+        filePath = undefined;
+      }
       sendStatus = () => res.status(400).send(validationResult.error);
     } else {
       let schemaName = validationResult.matches;
@@ -46,15 +50,19 @@ module.exports = (router = new Router()) => {
       filePath = path.join(DATADIR, fileName);
       sendStatus = () => res.send('Data saved');
     }
-    unusedFilename(filePath)
-      .then((unusedPath) => {
-        file.mv(unusedPath, (err) => {
-          if (err) {
-            return res.status(500).send(err);
-          }
-          return sendStatus();
+    if (filePath) {
+      unusedFilename(filePath)
+        .then((unusedPath) => {
+          file.mv(unusedPath, (err) => {
+            if (err) {
+              return res.status(500).send(err);
+            }
+            return sendStatus();
+          });
         });
-      });
+    } else {
+      return sendStatus();
+    }
     return false;
   });
   return router;
