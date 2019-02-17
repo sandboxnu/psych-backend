@@ -4,15 +4,25 @@ const archiver = require('archiver');
 const sanitize = require('sanitize-filename');
 const unusedFilename = require('unused-filename');
 const { DATADIR } = require('./dirs');
+const { hashAndStore, verify } = require('./authentication');
 
-
+var hasAuthenticated = false;
 module.exports = (router = new Router()) => {
+  router.get('/', (req, res, next) => {
+    hasAuthenticated = verify(req.query.password)
+    if (hasAuthenticated) {
+      next();
+    }
+    else {
+      res.status(401).send('Incorrect password');
+    }
+  }
+
   router.get('/', (req, res) => {
     res.status(200).set({
       'Content-Type': 'application/zip',
       'Content-disposition': 'attachment; filename=data.zip',
     });
-
     const zip = archiver('zip');
     zip.pipe(res);
     zip.directory(DATADIR, false);
