@@ -12,14 +12,10 @@ const data = require('./data');
 
 const tempPassword = "sandboxNEU";
 
-beforeAll(() => {
-  hashAndStore(tempPassword);
-});
-
 beforeEach(() => {
   fse.emptyDirSync(TESTDIR);
+  hashAndStore(tempPassword);
   fse.ensureDirSync(`${TESTDIR}/data`);
-  fse.ensureDirSync(`${TESTDIR}/passwordHash.txt`)
 });
 
 afterAll(() => {
