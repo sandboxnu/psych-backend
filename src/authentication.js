@@ -5,19 +5,23 @@ const {FILEDIR} = require('./dirs');
 var salt = bcrypt.genSaltSync(10);
 
 hashAndStore = (password) => {
-	var hash = bcrypt.hashSync(password, salt);
-	fs.writeFile(`${FILEDIR}/passwordHash.txt`, hash, function(err, data){
-    	if (err) console.log(err);
-    	console.log("Password hash successfully written to File.");
-	});
+	try {
+		var hash = bcrypt.hashSync(password, salt);
+		fs.writeFileSync(`${FILEDIR}/passwordHash.txt`, hash);
+		console.log("Password hash successfully written to File.");
+	} catch(error) {
+		console.log(error)
+	}
 }
 
 verify = (password) => {
-	fs.readFile(`${FILEDIR}/passwordHash.txt`, 'utf-8' ,function(err, buf) {
-		if (err) console.log(err);
-		var readHash = buf.toString();
-	});
-	return bcrypt.compareSync(password, readHash);
+	try {
+		var readHash = fs.readFileSync(`${FILEDIR}/passwordHash.txt`, 'utf-8');
+		console.log("Password hash read from file successfully.");
+		return bcrypt.compareSync(password, readHash.toString());
+	} catch(error) {
+		console.log(error)
+	}
 }
 
 module.exports = {hashAndStore, verify}
