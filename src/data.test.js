@@ -2,13 +2,13 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const request = require('supertest');
 const fse = require('fs-extra');
-const { hashAndStore, verify } = require('./authentication');
 require('dotenv').config();
 
 
 process.env.FILEDIR = `${process.env.FILEDIR}/test`;
 const TESTDIR = process.env.FILEDIR;
 const data = require('./data');
+const { hashAndStore, verify } = require('./authentication');
 
 const tempPassword = "sandboxNEU";
 
