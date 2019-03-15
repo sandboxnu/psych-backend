@@ -19,4 +19,18 @@ function verify(password) {
     .then(hash => bcrypt.compareSync(password, hash.toString()));
 }
 
-module.exports = { hashAndStore, verify };
+function verifyMiddleware(req, res, next) {
+  verify(req.query.password)
+    .then((authenticated) => {
+      if (authenticated) {
+        next();
+      } else {
+        res.status(401).send('Incorrect password');
+      }
+    })
+    .catch(() => {
+      res.status(500).send('No password set');
+    });
+}
+
+module.exports = { hashAndStore, verify, verifyMiddleware };

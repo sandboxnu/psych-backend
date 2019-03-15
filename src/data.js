@@ -4,19 +4,10 @@ const archiver = require('archiver');
 const sanitize = require('sanitize-filename');
 const unusedFilename = require('unused-filename');
 const { DATADIR } = require('./dirs');
-const { verify } = require('./authentication');
+const { verifyMiddleware } = require('./authentication');
 
 module.exports = (router = new Router()) => {
-  router.get('/', (req, res, next) => {
-    verify(req.query.password).then((authenticated) => {
-      if (authenticated) {
-        next();
-      } else {
-        res.status(401).send('Incorrect password');
-      }
-    });
-  });
-
+  router.get('/', verifyMiddleware); 
   router.get('/', (req, res) => {
     res.status(200).set({
       'Content-Type': 'application/zip',
