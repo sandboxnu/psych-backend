@@ -4,20 +4,17 @@ const archiver = require('archiver');
 const sanitize = require('sanitize-filename');
 const unusedFilename = require('unused-filename');
 const { DATADIR } = require('./dirs');
-const { hashAndStore, verify } = require('./authentication');
+const { verify } = require('./authentication');
 
-var hasAuthenticated = false;
 module.exports = (router = new Router()) => {
   router.get('/', (req, res, next) => {
-    hasAuthenticated = verify(req.query.password)
-    console.log(hasAuthenticated)
-    if (hasAuthenticated) {
-      console.log("verified successfully");
-      next();
-    }
-    else {
-      res.status(401).send('Incorrect password');
-    }
+    verify(req.query.password).then((authenticated) => {
+      if (authenticated) {
+        next();
+      } else {
+        res.status(401).send('Incorrect password');
+      }
+    });
   });
 
   router.get('/', (req, res) => {
@@ -29,18 +26,6 @@ module.exports = (router = new Router()) => {
     zip.pipe(res);
     zip.directory(DATADIR, false);
     zip.finalize();
-  });
-
-  router.post('/', (req, res, next) => {
-    hasAuthenticated = verify(req.query.password)
-    console.log(hasAuthenticated)
-    if (hasAuthenticated) {
-      console.log("verified successfully");
-      next();
-    }
-    else {
-      res.status(401).send('Incorrect password');
-    }
   });
 
   router.post('/', (req, res) => {

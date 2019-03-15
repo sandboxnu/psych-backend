@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const path = require('path');
 const { FILEDIR } = require('./dirs');
+const { verify } = require('./authentication');
 
 module.exports = (router = new Router()) => {
 // Get config file
@@ -12,6 +13,22 @@ module.exports = (router = new Router()) => {
         });
       }
     });
+  });
+  // Post config requires password
+  router.post('/', (req, res, next) => {
+    verify(req.query.password)
+      .then((authenticated) => {
+        if (authenticated) {
+          console.log('authenticated');
+          next();
+        } else {
+          res.status(401).send('Incorrect password');
+        }
+      })
+      .catch((error) => {
+        res.status(500).send();
+        console.log(error);
+      });
   });
   // Post config file
   router.post('/', (req, res) => {

@@ -4,7 +4,7 @@
   "description": "Empathic Accuracy backend for Sandbox",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "dev": "nodemon",
     "lint": "eslint \"./**/*.js\""
   },
