@@ -1,25 +1,29 @@
 const bcrypt = require('bcrypt');
 const fse = require('fs-extra');
+const path = require('path');
 const { FILEDIR } = require('./dirs');
+
+const HASHFILE = path.join(FILEDIR, 'passwordHash.txt');
 
 const salt = bcrypt.genSaltSync(10);
 
 const hashAndStore = (password) => {
   try {
     const hash = bcrypt.hashSync(password, salt);
-    fse.writeFileSync(`${FILEDIR}/passwordHash.txt`, hash);
-    console.log('Password hash successfully written to File.');
+    fse.writeFileSync(HASHFILE, hash);
   } catch (error) {
     console.log(error);
   }
 };
 
 function verify(password) {
-  return fse.readFile(`${FILEDIR}/passwordHash.txt`, 'utf-8')
+	console.log(password);
+  return fse.ensureFile(HASHFILE)
+    .then(() => fse.readFile(HASHFILE, 'utf-8'))
     .then(hash => bcrypt.compareSync(password, hash.toString()));
 }
 
-function verifyMiddleware(req, res, next) {
+function authMiddleware(req, res, next) {
   verify(req.query.password)
     .then((authenticated) => {
       if (authenticated) {
@@ -33,4 +37,4 @@ function verifyMiddleware(req, res, next) {
     });
 }
 
-module.exports = { hashAndStore, verify, verifyMiddleware };
+module.exports = { hashAndStore, verify, authMiddleware };
