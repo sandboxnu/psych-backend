@@ -12,9 +12,9 @@ const { hashAndStore } = require('./authentication');
 
 const tempPassword = 'sandboxNEU';
 
-beforeEach(() => {
+beforeEach(async () => {
   fse.emptyDirSync(TESTDIR);
-  hashAndStore(tempPassword);
+  await hashAndStore(tempPassword);
   fse.ensureDirSync(`${TESTDIR}/data`);
 });
 
@@ -39,6 +39,22 @@ test('GET data (wrong password) should fail', async () => {
     .get('/')
     .query({ password: 'wrong password' })
     .expect('Incorrect password')
+    .expect(401);
+});
+
+test('GET data (no password) should fail', async () => {
+  await request(app)
+    .get('/')
+    .expect('Incorrect password')
+    .expect(401);
+});
+
+test('GET data (no password stored) should fail', async () => {
+  await fse.emptyDir(TESTDIR);
+  await request(app)
+    .get('/')
+    .query({ password: tempPassword })
+    .expect('No password stored')
     .expect(401);
 });
 

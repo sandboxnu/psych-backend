@@ -11,10 +11,10 @@ const { hashAndStore } = require('./authentication');
 
 const tempPassword = 'sandboxNEU';
 
-beforeEach(() => {
+beforeEach(async () => {
   fse.ensureDirSync(TESTDIR);
   fse.emptyDirSync(TESTDIR);
-  hashAndStore(tempPassword);
+  await hashAndStore(tempPassword);
   fse.ensureDirSync(`${TESTDIR}/data`);
 });
 
