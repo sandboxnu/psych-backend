@@ -29,7 +29,7 @@ app.use(data());
 test('GET data (correct password) should succeed with zip Content-Type', async () => {
   await request(app)
     .get('/')
-    .query({ password: tempPassword })
+    .auth('', tempPassword)
     .expect('Content-Type', 'application/zip')
     .expect(200);
 });
@@ -37,15 +37,13 @@ test('GET data (correct password) should succeed with zip Content-Type', async (
 test('GET data (wrong password) should fail', async () => {
   await request(app)
     .get('/')
-    .query({ password: 'wrong password' })
-    .expect('Incorrect password')
+    .auth('', 'wrong password')
     .expect(401);
 });
 
 test('GET data (no password) should fail', async () => {
   await request(app)
     .get('/')
-    .expect('Incorrect password')
     .expect(401);
 });
 
@@ -53,8 +51,7 @@ test('GET data (no password stored) should fail', async () => {
   await fse.emptyDir(TESTDIR);
   await request(app)
     .get('/')
-    .query({ password: tempPassword })
-    .expect('No password stored')
+    .auth('', tempPassword)
     .expect(401);
 });
 

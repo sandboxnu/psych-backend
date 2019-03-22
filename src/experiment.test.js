@@ -29,14 +29,14 @@ app.use(experiment());
 test('GET experiment config should fail if no config', async () => {
   await request(app)
     .get('/')
-    .query({ password: tempPassword })
+    .auth('', tempPassword)
     .expect(400);
 });
 
 test('GET experiment config should return uploaded config', async () => {
   await request(app)
     .post('/')
-    .query({ password: tempPassword })
+    .auth('', tempPassword)
     .attach('file', Buffer.from('heyheyhey'))
     .expect(200);
   await request(app)
@@ -47,21 +47,20 @@ test('GET experiment config should return uploaded config', async () => {
 test('POST experiment config with bad password should fail', async () => {
   await request(app)
     .post('/')
-    .query({ password: 'wrong password' })
+    .auth('', 'WRONG')
     .attach('file', Buffer.from('heyheyhey'))
-    .expect('Incorrect password')
     .expect(401);
 });
 
 test('POST experiment config twice should overwrite', async () => {
   await request(app)
     .post('/')
-    .query({ password: tempPassword })
+    .auth('', tempPassword)
     .attach('file', Buffer.from('heyheyhey'))
     .expect(200);
   await request(app)
     .post('/')
-    .query({ password: tempPassword })
+    .auth('', tempPassword)
     .attach('file', Buffer.from('NEW CONFIG'))
     .expect(200);
   await request(app)
@@ -72,7 +71,7 @@ test('POST experiment config twice should overwrite', async () => {
 test('POST experiment config with file should succeed', async () => {
   await request(app)
     .post('/')
-    .query({ password: tempPassword })
+    .auth('', tempPassword)
     .attach('file', Buffer.from('heyheyhey'))
     .expect(200);
 });
@@ -80,14 +79,14 @@ test('POST experiment config with file should succeed', async () => {
 test('POST experiment config without file should fail', async () => {
   await request(app)
     .post('/')
-    .query({ password: tempPassword })
+    .auth('', tempPassword)
     .expect(400);
 });
 
 test('POST experiment config with wrong field name should fail', async () => {
   await request(app)
     .post('/')
-    .query({ password: tempPassword })
+    .auth('', tempPassword)
     .attach('WRONG', Buffer.from('heyheyhey'))
     .expect(400);
 });

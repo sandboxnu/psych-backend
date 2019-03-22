@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const fse = require('fs-extra');
 const path = require('path');
+const basicAuth = require('express-basic-auth');
 const { FILEDIR } = require('./dirs');
 
 const HASHFILE = path.join(FILEDIR, 'passwordHash.txt');
@@ -10,69 +11,63 @@ function hashAndStore(password) {
     .then(hash => fse.writeFile(HASHFILE, hash));
 }
 
-// Return Promise of boolean representing whether user is authorized
-// Throws Error if there's no password saved in the hashfile
-function verify(password) {
+// Return a Promise of hash value, returning an empty string if no hash
+function getHash() {
   return fse.pathExists(HASHFILE)
-    .then((exists) => {
-      if (!exists) {
-        // Error out if the hashfile doesn't exist.
-        throw new Error('no_password_stored');
-      }
-      return fse.readFile(HASHFILE, 'utf-8');
-    })
+    .then(isFile => (isFile ? fse.readFile(HASHFILE, 'utf-8') : ''));
+}
+
+function hashExists() {
+  return getHash().then(hash => hash !== '');
+}
+
+// Return Promise of boolean representing whether user is authorized
+function verify(password) {
+  return getHash()
     .then((hash) => {
-      if (hash === '') {
-        // Error out if the hashfile is empty
-        throw new Error('no_password_stored');
-      }
-      if (typeof password === 'undefined') {
-        // Return not authenticated if no password given.
+      if (typeof password === 'undefined' || hash === '') {
+        // Return not authenticated if no password given or no hash stored
         return false;
       }
       return bcrypt.compare(password, hash.toString());
     });
 }
 
-function authMiddleware(req, res, next) {
-  verify(req.query.password)
-    .then((authenticated) => {
-      if (authenticated) {
-        next();
-      } else {
-        res.status(401).send('Incorrect password');
-      }
-    })
-    .catch((err) => {
-      if (err.message === 'no_password_stored') {
-        res.status(401).send('No password stored');
-      }
-      res.status(500).send();
-    });
+function authorizer(username, password, cb) {
+  verify(password)
+    .then(authenticated => cb(null, authenticated))
+    .catch(err => cb(err));
 }
 
-function changePassword(req, res) {
-  if (typeof req.query.newPassword === 'undefined') {
-    res.status(400).send('Must provide newPassword');
-    return;
-  }
-  verify(req.query.password)
-    .catch((err) => {
-      // If there is no password stored yet, treat it like they are authenticated!
-      if (err.message === 'no_password_stored') {
-        return true;
+// Using the basic auth library to check the auth header and open up a password popup if no password
+const authMiddleware = basicAuth({
+  authorizer,
+  authorizeAsync: true,
+  challenge: true,
+  realm: 'sandboxneu',
+});
+
+const changePassword = [
+  (req, res, next) => {
+    // If a hash exists, validate their old password, else let them make the first password
+    hashExists().then((exists) => {
+      if (exists) {
+        authMiddleware(req, res, next);
+      } else {
+        next();
       }
-      throw err;
-    })
-    .then((authenticated) => {
-      if (authenticated) {
-        return hashAndStore(req.query.newPassword)
-          .then(() => res.status(200).send('New password stored'));
-      }
-      return res.status(401).send('Incorrect password');
-    })
-    .catch(err => res.status(500).send(err));
-}
+    });
+  },
+  (req, res) => {
+    const { newPassword } = req.query;
+    if (typeof newPassword === 'undefined') {
+      res.status(400).send('Must provide newPassword');
+    } else {
+      hashAndStore(newPassword)
+        .then(() => res.status(200).send('New password stored'));
+    }
+  },
+];
 
 module.exports = {
   hashAndStore, verify, authMiddleware, changePassword,

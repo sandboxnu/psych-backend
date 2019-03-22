@@ -42,7 +42,8 @@ test('change password using old password', async () => {
   await hashAndStore('old');
   await request(app)
     .post('/')
-    .query({ password: 'old', newPassword: 'new' })
+    .auth('', 'old')
+    .query({ newPassword: 'new' })
     .expect(200);
   expect(await verify('new')).toBeTruthy();
 });
@@ -51,7 +52,8 @@ test('reject change password with wrong old password', async () => {
   await hashAndStore('old');
   await request(app)
     .post('/')
-    .query({ password: 'WRONG', newPassword: 'new' })
+    .auth('', '')
+    .query({ newPassword: 'new' })
     .expect(401);
   expect(await verify('old')).toBeTruthy();
 });
