@@ -19,13 +19,17 @@ Use the development environment to test so you don't interfere with real collect
 
 ### Endpoints
 
-`GET /experiment` to download config file
+`GET /experiment` to download config file.
 
-`POST /experiment` with multipart/form-data and the config in the file field to upload config
+`POST /experiment` with multipart/form-data and the config in the file field to upload config. Requires Authorization header.
 
-`GET /data` to download zip of data files
+`GET /data` to download zip of data files. Requires Authorization header.
 
 `POST /data` with multipart/form-data and the config in the file field to upload data
+
+`POST /password` with authorization header and 'newPassword' in JSON body to set a new password. If no password set, anyone can set initial password.
+
+`POST /login` with authorization header. Responds 200 if good password.
 
 See [example](example/index.html) for much clearer info. Better docs needed!
 

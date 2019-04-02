@@ -59,11 +59,10 @@ const changePassword = [
     });
   },
   (req, res) => {
-    const { newPassword } = req.query;
-    if (typeof newPassword === 'undefined') {
+    if (!req.body || typeof req.body.newPassword === 'undefined') {
       res.status(400).send('Must provide newPassword');
     } else {
-      hashAndStore(newPassword)
+      hashAndStore(req.body.newPassword)
         .then(() => res.status(200).send('New password stored'));
     }
   },
