@@ -8,7 +8,7 @@ if [[ (($TRAVIS_BRANCH == 'master') || ($TRAVIS_BRANCH == 'staging')) && ($TRAVI
   git config user.name "Travis CI"
   git config user.email "dajinchu+travisCI@gmail.com"
   
-  git push --force deploy master
+  git push --force deploy $TRAVISBRANCH
 else
   echo "Not deploying, since this branch isn't master or staging."
 fi
