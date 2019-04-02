@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const path = require('path');
 const { FILEDIR } = require('./dirs');
+const { authMiddleware } = require('./authentication');
 
 module.exports = (router = new Router()) => {
 // Get config file
@@ -13,6 +14,8 @@ module.exports = (router = new Router()) => {
       }
     });
   });
+  // Post config requires password
+  router.post('/', authMiddleware);
   // Post config file
   router.post('/', (req, res) => {
     const { files: { file } = {} } = req;

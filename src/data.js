@@ -4,15 +4,15 @@ const archiver = require('archiver');
 const sanitize = require('sanitize-filename');
 const unusedFilename = require('unused-filename');
 const { DATADIR } = require('./dirs');
-
+const { authMiddleware } = require('./authentication');
 
 module.exports = (router = new Router()) => {
+  router.get('/', authMiddleware);
   router.get('/', (req, res) => {
     res.status(200).set({
       'Content-Type': 'application/zip',
       'Content-disposition': 'attachment; filename=data.zip',
     });
-
     const zip = archiver('zip');
     zip.pipe(res);
     zip.directory(DATADIR, false);

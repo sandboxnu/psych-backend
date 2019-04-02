@@ -17,15 +17,23 @@ There is a separate server instance for each project.
 
 Use the development environment to test so you don't interfere with real collected experiment data. 
 
+There is also a staging branch to roll out new features.
+
+**Staging branch:** `https://api.sandboxneu.com/staging`
+
 ### Endpoints
 
-`GET /experiment` to download config file
+`GET /experiment` to download config file.
 
-`POST /experiment` with multipart/form-data and the config in the file field to upload config
+`POST /experiment` with multipart/form-data and the config in the file field to upload config. Requires Authorization header.
 
-`GET /data` to download zip of data files
+`GET /data` to download zip of data files. Requires Authorization header.
 
 `POST /data` with multipart/form-data and the config in the file field to upload data
+
+`POST /password` with authorization header and 'newPassword' in JSON body to set a new password. If no password set, anyone can set initial password.
+
+`POST /login` with authorization header. Responds 200 if good password.
 
 See [example](example/index.html) for much clearer info. Better docs needed!
 
@@ -61,7 +69,8 @@ Pushing to master deploys to Digital Ocean server.
 
 For Travis, I roughly followed [this tutorial](https://kjaer.io/travis/)
 
-Git bare repo is in /var/www/psych-backend/src.git
+Git bare repo is in `/var/www/psych-backend/master/.git/` and there is a similar one for the staging branch with a slightly different post-receive hook.
+
 
 The server-side post-receive hook:
 ```bash
@@ -69,21 +78,21 @@ The server-side post-receive hook:
 
 echo ‘post-receive: Triggered.’
 
-cd /var/www/psych-backend/live
+cd /var/www/psych-backend/master
 
 echo ‘post-receive: git check out…’
 
-git --git-dir=/var/www/psych-backend/src.git --work-tree=/var/www/psych-backend/live checkout master -f
+git --git-dir=.git --work-tree=./ checkout master -f
 
 echo ‘post-receive: npm install…’
 
 npm install \
 && echo ‘post-receive: → done.’ \
-&& (pm2 delete /psych-backend-by-githook.*/ || true) \
-&& NODE_ENV=production PORT=3000 FILEDIR=/var/www/psych-backend/files0 pm2 start npm --name psych-backend-by-githook0 -- start \
-&& NODE_ENV=production PORT=3001 FILEDIR=/var/www/psych-backend/files1 pm2 start npm --name psych-backend-by-githook1 -- start \
-&& NODE_ENV=production PORT=3002 FILEDIR=/var/www/psych-backend/files2 pm2 start npm --name psych-backend-by-githook2 -- start \
-&& NODE_ENV=production PORT=3003 FILEDIR=/var/www/psych-backend/files3 pm2 start npm --name psych-backend-by-githook3 -- start \
+&& (pm2 delete /master-by-githook.*/ || true) \
+&& NODE_ENV=production PORT=3000 FILEDIR=/var/www/psych-backend/files/empathic pm2 start npm --name master-by-githook-empathic -- start \
+&& NODE_ENV=production PORT=3001 FILEDIR=/var/www/psych-backend/files/allostasis pm2 start npm --name master-by-githook-allostasis -- start \
+&& NODE_ENV=production PORT=3002 FILEDIR=/var/www/psych-backend/files/predictive pm2 start npm --name master-by-githook-predictive -- start \
+&& NODE_ENV=production PORT=3003 FILEDIR=/var/www/psych-backend/files/test pm2 start npm --name master-by-githook-test -- start \
 && echo ‘post-receive: app started successfully with pm2.
 ```
 

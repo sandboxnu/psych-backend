@@ -7,14 +7,19 @@ require('dotenv').config();
 process.env.FILEDIR = `${process.env.FILEDIR}/test`;
 const TESTDIR = process.env.FILEDIR;
 const experiment = require('./experiment');
+const { hashAndStore } = require('./authentication');
 
-afterEach(() => {
+const tempPassword = 'sandboxNEU';
+
+beforeEach(async () => {
+  fse.ensureDirSync(TESTDIR);
   fse.emptyDirSync(TESTDIR);
+  await hashAndStore(tempPassword);
   fse.ensureDirSync(`${TESTDIR}/data`);
 });
 
 afterAll(() => {
-  fse.remove(TESTDIR);
+  fse.removeSync(TESTDIR);
 });
 
 const app = express();
@@ -24,12 +29,14 @@ app.use(experiment());
 test('GET experiment config should fail if no config', async () => {
   await request(app)
     .get('/')
+    .auth('', tempPassword)
     .expect(400);
 });
 
 test('GET experiment config should return uploaded config', async () => {
   await request(app)
     .post('/')
+    .auth('', tempPassword)
     .attach('file', Buffer.from('heyheyhey'))
     .expect(200);
   await request(app)
@@ -37,13 +44,23 @@ test('GET experiment config should return uploaded config', async () => {
     .expect(200, 'heyheyhey');
 });
 
+test('POST experiment config with bad password should fail', async () => {
+  await request(app)
+    .post('/')
+    .auth('', 'WRONG')
+    .attach('file', Buffer.from('heyheyhey'))
+    .expect(401);
+});
+
 test('POST experiment config twice should overwrite', async () => {
   await request(app)
     .post('/')
+    .auth('', tempPassword)
     .attach('file', Buffer.from('heyheyhey'))
     .expect(200);
   await request(app)
     .post('/')
+    .auth('', tempPassword)
     .attach('file', Buffer.from('NEW CONFIG'))
     .expect(200);
   await request(app)
@@ -54,6 +71,7 @@ test('POST experiment config twice should overwrite', async () => {
 test('POST experiment config with file should succeed', async () => {
   await request(app)
     .post('/')
+    .auth('', tempPassword)
     .attach('file', Buffer.from('heyheyhey'))
     .expect(200);
 });
@@ -61,12 +79,14 @@ test('POST experiment config with file should succeed', async () => {
 test('POST experiment config without file should fail', async () => {
   await request(app)
     .post('/')
+    .auth('', tempPassword)
     .expect(400);
 });
 
 test('POST experiment config with wrong field name should fail', async () => {
   await request(app)
     .post('/')
+    .auth('', tempPassword)
     .attach('WRONG', Buffer.from('heyheyhey'))
     .expect(400);
 });
