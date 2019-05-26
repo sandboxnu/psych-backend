@@ -5,6 +5,7 @@ const sanitize = require('sanitize-filename');
 const unusedFilename = require('unused-filename');
 const { DATADIR } = require('./dirs');
 const { authMiddleware } = require('./authentication');
+const fs = require('fs');
 
 module.exports = (router = new Router()) => {
   router.get('/', authMiddleware);
@@ -20,20 +21,19 @@ module.exports = (router = new Router()) => {
   });
 
   router.post('/', (req, res) => {
-    const { files: { file } = {} } = req;
-    if (!file) {
-      return res.status(400).send('Collected data file was not uploaded!');
-    }
-    if (!file.name) {
-      return res.status(400).send('Collected data file missing name');
+    const jsonDataFile = 'reqJson.txt'
+    const jsonData = req.body
+
+    if (Object.keys(jsonData).length === 0) {
+      return res.status(400).send('Malformed or bad data');
     }
     // Sanitize filename to ensure it's a valid path (and avoid certain hacks).
-    const safeName = sanitize(file.name);
+    const safeName = sanitize(jsonDataFile);
     unusedFilename(path.join(DATADIR, safeName))
       .then((filename) => {
-        // Store the file on the server.
-        file.mv(filename, (err) => {
+        fs.writeFile(filename, JSON.stringify(jsonData), (err) => {
           if (err) {
+            console.error(err)
             return res.status(500).send(err);
           }
           return res.send('Data saved');
