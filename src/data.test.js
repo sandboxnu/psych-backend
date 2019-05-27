@@ -1,5 +1,5 @@
 const express = require('express');
-const fileUpload = require('express-fileupload');
+const bodyParser = require('body-parser');
 const request = require('supertest');
 const fse = require('fs-extra');
 require('dotenv').config();
@@ -23,7 +23,7 @@ afterAll(() => {
 });
 
 const app = express();
-app.use(fileUpload());
+app.use(bodyParser.json());
 app.use(data());
 
 test('GET data (correct password) should succeed with zip Content-Type', async () => {
@@ -55,30 +55,24 @@ test('GET data (no password stored) should fail', async () => {
     .expect(401);
 });
 
-test('POST data file should succeed', async () => {
+test('POST with json data should succeed', async () => {
+  await request(app)
+    .post('/')
+    .set('Content-Type', 'application/json')
+    .send({ data: "sandboxNEU"})
+    .expect(200, 'Data saved')
+});
+
+test('POST data with no data should fail', async () => {
+  await request(app)
+    .post('/')
+    .expect(400);
+});
+
+test('POST a data file should fail', async () => {
   await request(app)
     .post('/')
     .attach('file', Buffer.from('heyheyhey'), 'data.txt')
-    .expect(200);
-});
-
-test('POST data with no file should fail', async () => {
-  await request(app)
-    .post('/')
-    .expect(400);
-});
-
-test('POST data with wrong field name should fail', async () => {
-  await request(app)
-    .post('/')
-    .attach('WRONG', Buffer.from('heyheyhey'))
-    .expect(400);
-});
-
-test('POST data with no file name should fail', async () => {
-  await request(app)
-    .post('/')
-    .attach('file', Buffer.from('heyheyhey'))
     .expect(400);
 });
 
