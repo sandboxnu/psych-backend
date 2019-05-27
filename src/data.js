@@ -21,12 +21,11 @@ module.exports = (router = new Router()) => {
   });
 
   router.post('/', (req, res) => {
-    const jsonDataFile = 'reqJson.txt'
     const jsonData = req.body
-
     if (Object.keys(jsonData).length === 0) {
       return res.status(400).send('Malformed or bad data');
     }
+    const jsonDataFile = jsonData['file']
     // Sanitize filename to ensure it's a valid path (and avoid certain hacks).
     const safeName = sanitize(jsonDataFile);
     unusedFilename(path.join(DATADIR, safeName))

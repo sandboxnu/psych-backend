@@ -59,7 +59,7 @@ test('POST with json data should succeed', async () => {
   await request(app)
     .post('/')
     .set('Content-Type', 'application/json')
-    .send({ data: "sandboxNEU"})
+    .send({ 'file': 'reqJson.txt', 'data': "sandboxNEU"})
     .expect(200, 'Data saved')
 });
 
