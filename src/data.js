@@ -14,6 +14,11 @@ module.exports = (router = new Router()) => {
       'Content-disposition': 'attachment; filename=data.zip',
     });
     const zip = archiver('zip');
+    zip.on('error', (error) => {
+      zip.abort();
+      console.log(error);
+      return res.status(500).send('error zipping');
+    });
     zip.pipe(res);
     zip.directory(DATADIR, false);
     zip.finalize();
