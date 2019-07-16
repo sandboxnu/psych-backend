@@ -1,13 +1,17 @@
 const express = require('express');
-const fileUpload = require('express-fileupload');
+const bodyParser = require('body-parser');
 const request = require('supertest');
 const fse = require('fs-extra');
 require('dotenv').config();
+
+const { server } = require('../server.js');
 
 process.env.FILEDIR = `${process.env.FILEDIR}/test`;
 const TESTDIR = process.env.FILEDIR;
 const experiment = require('./experiment');
 const { hashAndStore } = require('./authentication');
+
+var mongoose = require('mongoose');
 
 const tempPassword = 'sandboxNEU';
 
@@ -18,30 +22,27 @@ beforeEach(async () => {
   fse.ensureDirSync(`${TESTDIR}/data`);
 });
 
-afterAll(() => {
+afterAll(async () => {
   fse.removeSync(TESTDIR);
+  await server.close();
+  await mongoose.disconnect();
 });
 
 const app = express();
-app.use(fileUpload());
+app.use(bodyParser.json());
 app.use(experiment());
 
-test('GET experiment config should fail if no config', async () => {
+test('GET experiment config (with password) should succeed', async () => {
   await request(app)
     .get('/')
     .auth('', tempPassword)
-    .expect(400);
+    .expect(200);
 });
 
-test('GET experiment config should return uploaded config', async () => {
-  await request(app)
-    .post('/')
-    .auth('', tempPassword)
-    .attach('file', Buffer.from('heyheyhey'))
-    .expect(200);
+test('GET experiment config (without password) should fail', async () => {
   await request(app)
     .get('/')
-    .expect(200, 'heyheyhey');
+    .expect(401);
 });
 
 test('POST experiment config with bad password should fail', async () => {
@@ -52,20 +53,21 @@ test('POST experiment config with bad password should fail', async () => {
     .expect(401);
 });
 
-test('POST experiment config twice should overwrite', async () => {
+test('POST experiment config (with password) should succeed', async () => {
   await request(app)
     .post('/')
+    .set('Content-Type', 'application/json')
     .auth('', tempPassword)
-    .attach('file', Buffer.from('heyheyhey'))
-    .expect(200);
+    .send({ 'configData': "sandboxNEU" })
+    .expect(200, 'Data saved');
+});
+
+test('POST experiment config (without password) should fail', async () => {
   await request(app)
     .post('/')
-    .auth('', tempPassword)
-    .attach('file', Buffer.from('NEW CONFIG'))
-    .expect(200);
-  await request(app)
-    .get('/')
-    .expect(200, 'NEW CONFIG');
+    .set('Content-Type', 'application/json')
+    .send({ 'configData': "sandboxNEU" })
+    .expect(401);
 });
 
 test('POST experiment config with file should succeed', async () => {
@@ -73,20 +75,5 @@ test('POST experiment config with file should succeed', async () => {
     .post('/')
     .auth('', tempPassword)
     .attach('file', Buffer.from('heyheyhey'))
-    .expect(200);
-});
-
-test('POST experiment config without file should fail', async () => {
-  await request(app)
-    .post('/')
-    .auth('', tempPassword)
-    .expect(400);
-});
-
-test('POST experiment config with wrong field name should fail', async () => {
-  await request(app)
-    .post('/')
-    .auth('', tempPassword)
-    .attach('WRONG', Buffer.from('heyheyhey'))
     .expect(400);
 });
