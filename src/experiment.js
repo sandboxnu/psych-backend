@@ -1,5 +1,4 @@
 const { Router } = require('express');
-const path = require('path');
 const { FILEDIR } = require('./dirs');
 const { authMiddleware } = require('./authentication');
 
@@ -16,18 +15,28 @@ module.exports = (router = new Router()) => {
     Config.find({}).then(function(configs) {
       var response = {};
       var count = 1;
-      configs.forEach(function(record) { 
+      configs.map((record) => { 
         response[count] = JSON.parse(record["configData"]);
         count += 1;
       });
-      return Promise.all([response]);
-    }).then(function(respArray) {
       res.status(200).set({
       'Content-Type': 'application/json',
       });
-      res.send(respArray[0]);
+      res.send(response);
     }).catch(function(error) {
       res.status(500).send(error);
+    });
+  });
+  router.get('/:configID', (req, res) => {
+    const configID = req.params.configID
+    console.log(configID)
+    Config.find({configID: configID }).then(function(configs) {
+      res.status(200).set({
+      'Content-Type': 'application/json',
+      });
+      const response = configs[0]['configData']
+      console.log(response);
+      res.send(response);
     });
   });
   // Post config requires password

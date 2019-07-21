@@ -6,7 +6,7 @@ var DataSchema = new Schema({
 	'time': String,
 	'completionID': String,
 	'experimentID': Number,
-	'configID': Number,  //foreign key to Configs collection?
+	'configID': Number,  //foreign key to Configs collection
 	'data': String,
 });
 

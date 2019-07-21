@@ -1,8 +1,4 @@
 const { Router } = require('express');
-const path = require('path');
-const archiver = require('archiver');
-const sanitize = require('sanitize-filename');
-const unusedFilename = require('unused-filename');
 const { DATADIR } = require('./dirs');
 const { authMiddleware } = require('./authentication');
 const fs = require('fs');
@@ -18,16 +14,14 @@ module.exports = (router = new Router()) => {
     DataRecord.find({}).then(function(dataRecords) {
       var response = {};
       var count = 1;
-      dataRecords.forEach(function(record) { 
+      dataRecords.map((record) => { 
         response[count] = JSON.parse(record["data"]);
         count += 1;
       });
-      return Promise.all([response]);
-    }).then(function(respArray) {
       res.status(200).set({
       'Content-Type': 'application/json',
       });
-      res.send(respArray[0]);
+      res.send(response);
     }).catch(function(error) {
       res.status(500).send(error);
     });

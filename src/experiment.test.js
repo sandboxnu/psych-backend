@@ -34,7 +34,7 @@ app.use(experiment());
 
 test('GET experiment config (with password) should succeed', async () => {
   await request(app)
-    .get('/')
+    .get('/16')
     .auth('', tempPassword)
     .expect(200);
 });
