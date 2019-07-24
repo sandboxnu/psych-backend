@@ -29,13 +29,11 @@ module.exports = (router = new Router()) => {
   });
   router.get('/:configID', (req, res) => {
     const configID = req.params.configID
-    console.log(configID)
     Config.find({configID: configID }).then(function(configs) {
       res.status(200).set({
       'Content-Type': 'application/json',
       });
       const response = configs[0]['configData']
-      console.log(response);
       res.send(response);
     });
   });

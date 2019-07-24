@@ -8,6 +8,10 @@ var ConfigSchema = new Schema({
 	'configData': String,
 });
 
+ConfigSchema.methods.getConfigID = function() {
+    return this.configID
+};
+
 ConfigSchema.plugin(autoIncrement.plugin, { model: 'Config', field: 'configID', startAt: 1});
 
 module.exports = mongoose.model('Config', ConfigSchema);

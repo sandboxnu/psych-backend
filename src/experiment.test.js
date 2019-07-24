@@ -12,6 +12,7 @@ const experiment = require('./experiment');
 const { hashAndStore } = require('./authentication');
 
 var mongoose = require('mongoose');
+var Config = require('./models/Config.model');
 
 const tempPassword = 'sandboxNEU';
 
@@ -34,7 +35,7 @@ app.use(experiment());
 
 test('GET experiment config (with password) should succeed', async () => {
   await request(app)
-    .get('/16')
+    .get('/')
     .auth('', tempPassword)
     .expect(200);
 });
@@ -43,6 +44,15 @@ test('GET experiment config (without password) should fail', async () => {
   await request(app)
     .get('/')
     .expect(401);
+});
+
+test('GET experiment config (with password) should succeed', async() => {
+  const config = new Config({time: 'time', configID: 999999999999999, configData: JSON.stringify({ 'configData': "sandboxNEU" })});
+  config.save().then(() => {
+        Config.find({ configID: 999999999999999 }).then(function(configs) {
+        console.log(configs);
+    });
+  });
 });
 
 test('POST experiment config with bad password should fail', async () => {
